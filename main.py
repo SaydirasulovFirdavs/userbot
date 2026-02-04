@@ -23,16 +23,18 @@ def save_history(history):
         json.dump(history, f)
 
 # Clientni sozlash
-api_id = config.API_ID
-api_hash = config.API_HASH
+api_id = int(os.environ.get('API_ID', config.API_ID))
+api_hash = os.environ.get('API_HASH', config.API_HASH)
 
 # Agar kompyuterda bo'lsa, fayldan o'qiydi.
 # Agar Render (server) da bo'lsa, "Environment Variable" dan o'qiydi.
 session_string = os.environ.get('SESSION_STRING')
 
 if session_string:
-    client = TelegramClient(StringSession(session_string), api_id, api_hash)
+    print("Session string topildi, ishga tushirilmoqda...", flush=True)
+    client = TelegramClient(StringSession(session_string.strip()), api_id, api_hash)
 else:
+    print("Session string topilmadi, local sessiondan foydalaniladi.", flush=True)
     client = TelegramClient('my_userbot_session', api_id, api_hash)
 
 @client.on(events.NewMessage(incoming=True))
@@ -75,6 +77,12 @@ async def handle_incoming_message(event):
 print("Bot jarayoni boshlandi...")
 
 if __name__ == '__main__':
+    print("Dastur boshlanmoqda...", flush=True)
     keep_alive()
-    client.start()
-    client.run_until_disconnected()
+    try:
+        print("Telegram client boshlanmoqda...", flush=True)
+        client.start()
+        print("Bot muvaffaqiyatli ulandi va ishlayapti! ✅", flush=True)
+        client.run_until_disconnected()
+    except Exception as e:
+        print(f"KRITIK XATOLIK: {e}", flush=True)
