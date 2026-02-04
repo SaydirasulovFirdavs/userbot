@@ -31,8 +31,10 @@ api_hash = os.environ.get('API_HASH', config.API_HASH)
 session_string = os.environ.get('SESSION_STRING')
 
 if session_string:
-    print("Session string topildi, ishga tushirilmoqda...", flush=True)
-    client = TelegramClient(StringSession(session_string.strip()), api_id, api_hash)
+    print("Session string topildi, tozalanmoqda...", flush=True)
+    # Hamma probel va yangi qatorlarni olib tashlaymiz
+    clean_session = "".join(session_string.split())
+    client = TelegramClient(StringSession(clean_session), api_id, api_hash)
 else:
     print("Session string topilmadi, local sessiondan foydalaniladi.", flush=True)
     client = TelegramClient('my_userbot_session', api_id, api_hash)
