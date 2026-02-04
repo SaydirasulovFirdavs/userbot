@@ -37,6 +37,11 @@ else:
 
 @client.on(events.NewMessage(incoming=True))
 async def handle_incoming_message(event):
+    # Debug xabari (faqat siz uchun)
+    if event.is_private and event.raw_text.lower() == '.test':
+        await event.reply("Bot ishlayapti! ✅")
+        return
+
     if not event.is_private:
         return
 
@@ -45,6 +50,7 @@ async def handle_incoming_message(event):
         return
         
     sender_id = str(sender.id)
+    print(f"Yangi xabar keldi: {sender_id} dan")
     
     me = await client.get_me()
     if sender_id == str(me.id):
@@ -57,11 +63,16 @@ async def handle_incoming_message(event):
 
     if last_reply_date != today_str:
         print(f"Javob qaytarilmoqda: {sender.first_name} (ID: {sender_id})")
-        await event.reply(config.AUTO_REPLY_MESSAGE)
-        history[sender_id] = today_str
-        save_history(history)
+        try:
+            await event.reply(config.AUTO_REPLY_MESSAGE)
+            history[sender_id] = today_str
+            save_history(history)
+        except Exception as e:
+            print(f"Xatolik xabar yuborishda: {e}")
+    else:
+        print(f"Bugun allaqachon javob berilgan: {sender_id}")
 
-print("Bot ishga tushdi...")
+print("Bot jarayoni boshlandi...")
 
 if __name__ == '__main__':
     keep_alive()
